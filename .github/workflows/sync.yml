@@ -1,5 +1,4 @@
 name: LeetCode Sync
-
 on:
   workflow_dispatch:
   schedule:
