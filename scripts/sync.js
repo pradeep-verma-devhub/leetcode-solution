@@ -1,4 +1,3 @@
-
 import axios from "axios";
 
 console.log("LeetCode Sync Started");
