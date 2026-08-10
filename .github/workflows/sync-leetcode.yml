@@ -4,18 +4,20 @@ on:
   schedule:
     # Run every 6 hours
     - cron: "0 */6 * * *"
+
   workflow_dispatch:
     inputs:
       username:
-        description: "LeetCode username (optional, uses env var if not provided)"
+        description: "LeetCode username (optional)"
         required: false
 
 jobs:
   sync:
     runs-on: ubuntu-latest
+
     permissions:
       contents: write
-      
+
     steps:
       - name: 📥 Checkout repository
         uses: actions/checkout@v4
@@ -33,6 +35,8 @@ jobs:
       - name: 🔄 Sync LeetCode submissions
         env:
           LEETCODE_USERNAME: ${{ secrets.LEETCODE_USERNAME }}
+          LEETCODE_SESSION: ${{ secrets.LEETCODE_SESSION }}
+          LEETCODE_CSRF_TOKEN: ${{ secrets.LEETCODE_CSRF_TOKEN }}
           GIT_AUTHOR_NAME: "LeetCode-Bot"
           GIT_AUTHOR_EMAIL: "bot@leetcode-sync.dev"
         run: node scripts/sync-fixed.js
