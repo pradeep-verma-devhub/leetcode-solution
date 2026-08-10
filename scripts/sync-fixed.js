@@ -133,8 +133,8 @@ async function getSubmissions() {
 
 async function getSubmissionCode(submissionId) {
   const query = `
-    query submissionDetail($submissionId: Int!) {
-      submissionDetail(submissionId: $submissionId) {
+    query submissionDetails($submissionId: ID!) {
+      submissionDetails(submissionId: $submissionId) {
         code
         lang
         question {
@@ -146,21 +146,36 @@ async function getSubmissionCode(submissionId) {
     }
   `;
 
-  const response = await client.post("/graphql", {
-    operationName: "submissionDetail",
-    variables: {
-      submissionId: Number(submissionId),
-    },
-    query,
-  });
+  try {
+    const response = await client.post("/graphql/", {
+      operationName: "submissionDetails",
+      variables: {
+        submissionId: String(submissionId),
+      },
+      query,
+    });
 
-  if (response.data.errors) {
-    throw new Error(
-      JSON.stringify(response.data.errors)
+    if (response.data.errors) {
+      throw new Error(
+        JSON.stringify(response.data.errors)
+      );
+    }
+
+    return response.data?.data?.submissionDetails || null;
+  } catch (error) {
+    console.error(
+      `Request failed for submission ${submissionId}:`,
+      error.response?.status || "unknown"
     );
-  }
 
-  return response.data?.data?.submissionDetail;
+    if (error.response?.data) {
+      console.error(
+        JSON.stringify(error.response.data)
+      );
+    }
+
+    throw error;
+  }
 }
 
 function getExtension(lang) {
