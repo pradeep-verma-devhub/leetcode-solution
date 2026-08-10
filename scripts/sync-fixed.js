@@ -133,10 +133,13 @@ async function getSubmissions() {
 
 async function getSubmissionCode(submissionId) {
   const query = `
-    query submissionDetails($submissionId: ID!) {
+    query submissionDetails($submissionId: Int!) {
       submissionDetails(submissionId: $submissionId) {
         code
-        lang
+        lang {
+          name
+          verboseName
+        }
         question {
           questionId
           title
@@ -150,7 +153,7 @@ async function getSubmissionCode(submissionId) {
     const response = await client.post("/graphql/", {
       operationName: "submissionDetails",
       variables: {
-        submissionId: String(submissionId),
+        submissionId: Number(submissionId),
       },
       query,
     });
@@ -161,7 +164,20 @@ async function getSubmissionCode(submissionId) {
       );
     }
 
-    return response.data?.data?.submissionDetails || null;
+    const detail =
+      response.data?.data?.submissionDetails;
+
+    if (!detail) {
+      throw new Error(
+        "LeetCode returned no submission details."
+      );
+    }
+
+    // Convert LeetCode's language object
+    // into the language string our script expects.
+    detail.lang = detail.lang?.name || "";
+
+    return detail;
   } catch (error) {
     console.error(
       `Request failed for submission ${submissionId}:`,
