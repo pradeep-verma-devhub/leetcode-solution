@@ -21,4 +21,4 @@ jobs:
           leetcode-csrf-token: ${{ secrets.LEETCODE_CSRF_TOKEN }}
           leetcode-session: ${{ secrets.LEETCODE_SESSION }}
           verbose: true
-          commit-header: "[LeetCode Sync]"
+          commit-header: "Sync LeetCode Submission"
